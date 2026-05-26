@@ -3,34 +3,52 @@ import streamlit as st
 # إعدادات الصفحة
 st.set_page_config(page_title="لوحة إدخال السحوبات - العبقري 2", layout="wide")
 
-# التصميم اللوني الجديد لإجبار اللوحة على شكل شبكة (Grid) متناسقة
+# التصميم اللوني لعمل أزرار دائرية خضراء عند التحديد ومنع انقسام الأرقام
 st.markdown("""
     <style>
-    /* تحويل الحاوية الأفقية إلى شبكة بـ 10 أعمدة متساوية */
+    /* إجبار الشبكة لتكون 10 أعمدة متناسقة المسافات */
     div[data-testid="stHorizontalBlock"] {
         display: grid !important;
         grid-template-columns: repeat(10, 1fr) !important;
-        gap: 2px !important;
+        gap: 6px !important;
         width: 100% !important;
+        margin-bottom: 6px !important;
     }
-    /* إزالة الحواف والفراغات الافتراضية لأعمدة ستريملت */
     div[data-testid="column"] {
         width: 100% !important;
         padding: 0 !important;
         min-width: 0 !important;
+        display: flex;
+        justify-content: center;
     }
-    /* تصميم الأزرار لتكون مربعة ومناسبة لشاشة الهاتف */
+    /* تصميم الدائرة للأرقام وتوسيطها */
     .stButton>button {
-        width: 100% !important;
-        height: 40px !important;
-        font-size: 14px !important;
-        font-weight: bold !important;
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important; /* تحويل الزر إلى دائرة */
         padding: 0 !important;
         margin: 0 !important;
+        font-size: 15px !important;
+        font-weight: bold !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 0 !important;
+        min-width: 0 !important;
+        border: 1px solid #ddd !important;
     }
-    /* تقليل الفراغ العلوي للصفحة لتوفير مساحة */
-    .block-container {
-        padding-top: 2rem !important;
+    /* منع النص من الانقسام عمودياً */
+    .stButton>button p {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+    }
+    /* تحويل الزر المحدد (Primary) إلى اللون الأخضر بالكامل */
+    button[kind="primary"] {
+        background-color: #28a745 !important; 
+        border-color: #1e7e34 !important;
+        color: white !important;
+        transform: scale(1.1); /* تكبير الدائرة قليلاً عند التحديد لإبرازها */
     }
     </style>
 """, unsafe_allow_html=True)
@@ -63,17 +81,19 @@ else:
 
 st.write("---")
 
-# إنشاء لوحة الأرقام (9 صفوف × 10 أعمدة)
+# إنشاء لوحة الأرقام 
 for row in range(9):
     cols = st.columns(10)
     for col_idx in range(10):
         num = row * 10 + col_idx + 1
         
         is_selected = num in st.session_state.current_selection
-        label = f"✅ {num}" if is_selected else str(num)
+        # إذا كان الرقم محدداً، يأخذ نوع 'primary' الذي صممناه ليكون أخضر
+        btn_type = "primary" if is_selected else "secondary"
         
         with cols[col_idx]:
-            st.button(label, key=f"btn_{num}", on_click=toggle_number, args=(num,))
+            # نضع الرقم فقط بدون أي علامات صح لمنع تشوه التصميم
+            st.button(str(num), key=f"btn_{num}", on_click=toggle_number, args=(num,), type=btn_type)
 
 st.write("---")
 
