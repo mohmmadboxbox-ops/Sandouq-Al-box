@@ -1,25 +1,23 @@
 import streamlit as st
+import streamlit.components.v1 as components
+import os
 
-st.set_page_config(page_title="العبقري 2", layout="wide")
+st.set_page_config(page_title="العبقري 2", layout="centered", initial_sidebar_state="collapsed")
 
-st.title("العبقري 2: لوحة الإدخال")
+st.markdown("""
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
 
-# قائمة الأرقام من 1 إلى 90
-all_numbers = list(range(1, 91))
+current_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(current_dir, "templates", "index.html")
 
-# القائمة الذكية للإدخال (مضمونة 100% على الموبايل)
-selected_numbers = st.multiselect(
-    "اضغط هنا لاختيار الأرقام (يمكنك كتابة الرقم للبحث السريع):",
-    options=all_numbers,
-    max_selections=50,
-    placeholder="اختر الأرقام..."
-)
-
-# العداد المدمج
-count = len(selected_numbers)
-if count == 50:
-    st.success(f"✅ اكتمل العدد: {count} / 50")
-else:
-    st.info(f"📊 الأرقام المحددة: {count} / 50")
-
-st.write("الأرقام التي اخترتها:", sorted(selected_numbers))
+try:
+    with open(file_path, "r", encoding="utf-8") as f:
+        html_code = f.read()
+    components.html(html_code, height=1300, scrolling=True)
+except Exception as e:
+    st.error(f"🚨 خطأ: لم أتمكن من العثور على الملف. المسار الذي بحثت فيه هو: {file_path}")
