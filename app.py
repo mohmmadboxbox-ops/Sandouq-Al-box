@@ -6,7 +6,6 @@ st.set_page_config(page_title="لوحة إدخال السحوبات - العبق
 # التصميم اللوني لعمل أزرار دائرية خضراء عند التحديد ومنع انقسام الأرقام
 st.markdown("""
     <style>
-    /* إجبار الشبكة لتكون 10 أعمدة متناسقة المسافات */
     div[data-testid="stHorizontalBlock"] {
         display: grid !important;
         grid-template-columns: repeat(10, 1fr) !important;
@@ -21,11 +20,10 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
-    /* تصميم الدائرة للأرقام وتوسيطها */
     .stButton>button {
         width: 36px !important;
         height: 36px !important;
-        border-radius: 50% !important; /* تحويل الزر إلى دائرة */
+        border-radius: 50% !important;
         padding: 0 !important;
         margin: 0 !important;
         font-size: 15px !important;
@@ -37,18 +35,16 @@ st.markdown("""
         min-width: 0 !important;
         border: 1px solid #ddd !important;
     }
-    /* منع النص من الانقسام عمودياً */
     .stButton>button p {
         margin: 0 !important;
         padding: 0 !important;
         line-height: 1 !important;
     }
-    /* تحويل الزر المحدد (Primary) إلى اللون الأخضر بالكامل */
     button[kind="primary"] {
         background-color: #28a745 !important; 
         border-color: #1e7e34 !important;
         color: white !important;
-        transform: scale(1.1); /* تكبير الدائرة قليلاً عند التحديد لإبرازها */
+        transform: scale(1.1);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -67,15 +63,20 @@ def toggle_number(num):
     else:
         if len(st.session_state.current_selection) < 50:
             st.session_state.current_selection.append(num)
-    
-    if len(st.session_state.current_selection) == 50:
-        sorted_draw = sorted(st.session_state.current_selection)
-        st.session_state.saved_draws.append(sorted_draw)
-        st.session_state.current_selection = []
+    # تمت إزالة المسح التلقائي من هنا لإعطائك التحكم الكامل
+
+# دالة مخصصة للحفظ والمسح اليدوي
+def save_and_clear():
+    sorted_draw = sorted(st.session_state.current_selection)
+    st.session_state.saved_draws.append(sorted_draw)
+    st.session_state.current_selection = []
 
 count = len(st.session_state.current_selection)
+
+# ظهور زر الحفظ فقط عند اكتمال 50 رقماً
 if count == 50:
-    st.success(f"الأرقام المحددة: {count} / 50 (تم الحفظ!)")
+    st.success(f"الأرقام المحددة: {count} / 50 (يرجى مراجعة اللوحة ثم التأكيد)")
+    st.button("💾 تأكيد حفظ السحب ومسح اللوحة للبدء من جديد", on_click=save_and_clear, use_container_width=True)
 else:
     st.warning(f"الأرقام المحددة: {count} / 50")
 
@@ -88,11 +89,9 @@ for row in range(9):
         num = row * 10 + col_idx + 1
         
         is_selected = num in st.session_state.current_selection
-        # إذا كان الرقم محدداً، يأخذ نوع 'primary' الذي صممناه ليكون أخضر
         btn_type = "primary" if is_selected else "secondary"
         
         with cols[col_idx]:
-            # نضع الرقم فقط بدون أي علامات صح لمنع تشوه التصميم
             st.button(str(num), key=f"btn_{num}", on_click=toggle_number, args=(num,), type=btn_type)
 
 st.write("---")
