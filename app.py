@@ -1,40 +1,42 @@
 import streamlit as st
 
-st.set_page_config(page_title="العبقري 2", layout="wide")
+st.set_page_config(layout="wide")
 
-# CSS يمنع نزول الأرقام تحت بعضها أبداً
+# هذا CSS هو "قانون" التنسيق
 st.markdown("""
     <style>
-    .flex-container {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        justify-content: center !important;
-        gap: 5px !important;
+    .fix-grid {
+        display: grid !important;
+        grid-template-columns: repeat(10, 1fr) !important;
+        gap: 2px !important;
+        width: 100% !important;
+        max-width: 400px !important; /* حجم ثابت للموبايل */
+        margin: auto !important;
     }
-    .num-btn {
-        width: 32px !important;
-        height: 32px !important;
-        font-size: 12px !important;
-        padding: 0 !important;
-        margin: 0 !important;
+    .num-box {
+        background: #eee;
+        text-align: center;
+        padding: 5px 0;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        font-size: 12px;
     }
+    .selected { background: #28a745 !important; color: white !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# إدارة الأرقام المختارة
+# إدارة الحالة
 if 'sel' not in st.session_state: st.session_state.sel = []
 
-def toggle(n):
-    if n in st.session_state.sel: st.session_state.sel.remove(n)
-    elif len(st.session_state.sel) < 50: st.session_state.sel.append(n)
-
-# العدّاد في الأعلى
 st.subheader(f"العدد المختار: {len(st.session_state.sel)} / 50")
 
-# عرض الأزرار كـ Flexbox
-st.markdown('<div class="flex-container">', unsafe_allow_html=True)
+# إنشاء الأزرار بطريقة يدوية لضمان التنسيق
+st.markdown('<div class="fix-grid">', unsafe_allow_html=True)
 for i in range(1, 91):
-    # نستخدم زر عادي ونطبق التنسيق عليه
-    if st.button(str(i), key=f"b{i}", type="primary" if i in st.session_state.sel else "secondary"):
-        toggle(i)
+    is_sel = i in st.session_state.sel
+    # نستخدم زر لضمان التفاعل
+    if st.button(str(i), key=f"n{i}", type="primary" if is_sel else "secondary"):
+        if is_sel: st.session_state.sel.remove(i)
+        elif len(st.session_state.sel) < 50: st.session_state.sel.append(i)
+        st.rerun() # تحديث الصفحة فوراً
 st.markdown('</div>', unsafe_allow_html=True)
