@@ -3,15 +3,17 @@ import streamlit as st
 # إعدادات الصفحة
 st.set_page_config(page_title="لوحة إدخال السحوبات - العبقري 2", layout="wide")
 
-# التصميم اللوني لعمل أزرار دائرية خضراء عند التحديد ومنع انقسام الأرقام
+# عزل التصميم وتخصيصه للوحة الأرقام فقط
 st.markdown("""
     <style>
+    /* إعداد شبكة الأرقام */
     div[data-testid="stHorizontalBlock"] {
         display: grid !important;
         grid-template-columns: repeat(10, 1fr) !important;
         gap: 6px !important;
         width: 100% !important;
         margin-bottom: 6px !important;
+        direction: ltr !important; /* ضمان الترتيب من اليسار لليمين */
     }
     div[data-testid="column"] {
         width: 100% !important;
@@ -20,9 +22,10 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
-    .stButton>button {
-        width: 36px !important;
-        height: 36px !important;
+    /* تصميم الدوائر للأرقام حصراً (داخل الشبكة) */
+    div[data-testid="stHorizontalBlock"] .stButton>button {
+        width: 38px !important;
+        height: 38px !important;
         border-radius: 50% !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -35,12 +38,13 @@ st.markdown("""
         min-width: 0 !important;
         border: 1px solid #ddd !important;
     }
-    .stButton>button p {
+    div[data-testid="stHorizontalBlock"] .stButton>button p {
         margin: 0 !important;
         padding: 0 !important;
         line-height: 1 !important;
     }
-    button[kind="primary"] {
+    /* اللون الأخضر عند التحديد */
+    div[data-testid="stHorizontalBlock"] button[kind="primary"] {
         background-color: #28a745 !important; 
         border-color: #1e7e34 !important;
         color: white !important;
@@ -63,9 +67,7 @@ def toggle_number(num):
     else:
         if len(st.session_state.current_selection) < 50:
             st.session_state.current_selection.append(num)
-    # تمت إزالة المسح التلقائي من هنا لإعطائك التحكم الكامل
 
-# دالة مخصصة للحفظ والمسح اليدوي
 def save_and_clear():
     sorted_draw = sorted(st.session_state.current_selection)
     st.session_state.saved_draws.append(sorted_draw)
@@ -73,7 +75,7 @@ def save_and_clear():
 
 count = len(st.session_state.current_selection)
 
-# ظهور زر الحفظ فقط عند اكتمال 50 رقماً
+# العداد وزر الحفظ اليدوي
 if count == 50:
     st.success(f"الأرقام المحددة: {count} / 50 (يرجى مراجعة اللوحة ثم التأكيد)")
     st.button("💾 تأكيد حفظ السحب ومسح اللوحة للبدء من جديد", on_click=save_and_clear, use_container_width=True)
@@ -82,7 +84,7 @@ else:
 
 st.write("---")
 
-# إنشاء لوحة الأرقام 
+# إنشاء لوحة الأرقام الدائرية
 for row in range(9):
     cols = st.columns(10)
     for col_idx in range(10):
@@ -96,7 +98,7 @@ for row in range(9):
 
 st.write("---")
 
-# عرض السحوبات المحفوظة
+# السحوبات المحفوظة
 if st.session_state.saved_draws:
     st.header("السحوبات المحفوظة:")
     for i, draw in enumerate(st.session_state.saved_draws):
