@@ -3,14 +3,24 @@ import streamlit as st
 # إعدادات الصفحة
 st.set_page_config(page_title="لوحة إدخال السحوبات - العبقري 2", layout="wide")
 
-# تصميم لوني بسيط باستخدام CSS مدمج
+# تصميم لوني وتعديل التجاوب لإجبار اللوحة على عرض 10 أعمدة في الهاتف
 st.markdown("""
     <style>
+    /* تصغير الأزرار قليلاً لتتسع جميعها في شاشة الموبايل */
     .stButton>button {
         width: 100%;
-        height: 50px;
-        font-size: 18px;
+        height: 40px;
+        font-size: 14px;
         font-weight: bold;
+        padding: 0px !important;
+    }
+    /* إجبار الأعمدة على البقاء بجانب بعضها في سطر واحد وعدم النزول */
+    [data-testid="column"] {
+        min-width: 0 !important;
+        padding: 2px !important;
+    }
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: nowrap !important;
     }
     </style>
 """, unsafe_allow_html=True)
