@@ -20,7 +20,10 @@ body { background: var(--bg); font-family: 'Tajawal', sans-serif; color: var(--t
 .header { text-align: center; padding: 20px 16px 14px; border-bottom: 0.5px solid var(--border); background: var(--surface); margin-bottom: 14px; position: sticky; top: 0; z-index: 10; }
 .header h1 { font-size: 17px; font-weight: 700; color: var(--text); }
 .header .sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
-#app { padding: 0 12px; max-width: 440px; margin: 0 auto; }
+
+/* السماح للوحة بالتمدد لأقصى عرض مع حواف مريحة للعين */
+#app { padding: 0 10px; width: 100%; max-width: 800px; margin: 0 auto; }
+
 .counter-bar { display: flex; gap: 8px; margin-bottom: 10px; }
 .counter-box { flex: 1; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; text-align: center; }
 .counter-box .lbl { font-size: 10px; color: var(--text2); margin-bottom: 2px; }
@@ -31,10 +34,14 @@ body { background: var(--bg); font-family: 'Tajawal', sans-serif; color: var(--t
 .phase-label { font-size: 12px; color: var(--text2); text-align: center; margin-bottom: 5px; }
 .msg { font-size: 12px; text-align: center; min-height: 18px; margin-bottom: 6px; color: var(--red); }
 .msg.green { color: var(--green); } .msg.gold { color: var(--gold); }
-.grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; margin-bottom: 12px; }
-.ball { aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border2); background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--text2); cursor: pointer; user-select: none; }
+.grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-bottom: 12px; }
+.ball { aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--border2); background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: var(--text2); cursor: pointer; user-select: none; }
 .ball.sel1 { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 0 8px var(--blue-glow); font-weight: 700; }
 .ball.sel2 { background: var(--green); color: #fff; border-color: var(--green); box-shadow: 0 0 8px var(--green-glow); font-weight: 700; }
+
+/* تأثير خرافي للكرة المشتركة بين الاختيارين */
+.ball.sel1.sel2 { background: linear-gradient(135deg, var(--blue) 50%, var(--green) 50%); border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.3); font-weight: 700; color: #fff; }
+
 .ball.locked { opacity: 0.28; cursor: default; }
 .sel-row { display: flex; gap: 8px; margin-bottom: 10px; }
 .sel-box { flex: 1; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 8px; min-height: 54px; }
@@ -136,7 +143,7 @@ function toggleBall(n, el) {
   if (idx === -1) {
     if (current.length >= MAX) { showMsg('وصلت للحد الأقصى 50 كرة!', 'red'); return; }
     current.push(n); el.classList.add(phase === 1 ? 'sel1' : 'sel2');
-  } else { current.splice(idx, 1); el.classList.remove('sel1', 'sel2'); }
+  } else { current.splice(idx, 1); el.classList.remove(phase === 1 ? 'sel1' : 'sel2'); }
   updateUI();
 }
 
@@ -258,7 +265,7 @@ document.getElementById('reset-btn').addEventListener('click', () => {
 
 function resetGrid(full) {
   grid.querySelectorAll('.ball').forEach(b => { b.classList.remove('sel1', 'sel2', 'locked'); });
-  if (!full && sel1.length) { sel1.forEach(n => { const el = getBallEl(n); if (el) el.classList.add('sel1', 'locked'); }); }
+  if (!full && sel1.length) { sel1.forEach(n => { const el = getBallEl(n); if (el) el.classList.add('sel1'); }); } // إزالة القفل لتمكين الاختيار الثاني
   updateUI();
 }
 function lockAll() { grid.querySelectorAll('.ball').forEach(b => b.classList.add('locked')); }
